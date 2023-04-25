@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
 class ItemListTile extends StatelessWidget {
-  final String image;
+  final String? image;
   final String title;
   final String? description;
   final int sellPrice;
   final VoidCallback? onTap;
+  final VoidCallback? onDeleteTap;
 
   const ItemListTile({
-    required this.image,
+    this.image,
     required this.title,
     this.description,
     this.sellPrice = 0,
     this.onTap,
+    this.onDeleteTap,
     Key? key,
   }) : super(key: key);
 
@@ -25,12 +27,18 @@ class ItemListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              image,
-              height: 60,
-              width: 60,
-            ),
-            SizedBox(width: 12),
+            (image != null)
+                ? Padding(
+                    padding: const EdgeInsets.only(
+                      right: 12,
+                    ),
+                    child: Image.network(
+                      image!,
+                      height: 60,
+                      width: 60,
+                    ),
+                  )
+                : SizedBox.shrink(),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,6 +52,12 @@ class ItemListTile extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyText2,
                   ),
                 ],
+              ),
+            ),
+            IconButton(
+              onPressed: onDeleteTap,
+              icon: Icon(
+                Icons.delete,
               ),
             ),
           ],

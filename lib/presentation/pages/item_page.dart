@@ -1,6 +1,12 @@
+import 'package:clevrpos/infrastructure/models/item_model.dart';
 import 'package:clevrpos/presentation/pages/item_form_page.dart';
 import 'package:clevrpos/presentation/widgets/item_list_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../../common/util/database_util.dart';
+import '../../infrastructure/datasources/item_datasource.dart';
 
 class ItemPage extends StatefulWidget {
   const ItemPage({Key? key}) : super(key: key);
@@ -10,9 +16,33 @@ class ItemPage extends StatefulWidget {
 }
 
 class _ItemPageState extends State<ItemPage> {
+  /// Data
+  List<ItemModel> itemList = [];
+  ItemDatasource? itemDatasource;
+  Future<Database>? database;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await initializeDependency();
+      await retrieveItems();
+    });
+  }
+
+  Future<void> initializeDependency() async {
+    database = DatabaseUtil.initialize();
+    itemDatasource = ItemDatasource(
+      database: await database!,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return itemListView(context);
+    return RefreshIndicator(
+      onRefresh: retrieveItems,
+      child: itemListView(context),
+    );
   }
 
   Widget itemListView(BuildContext context) {
@@ -24,60 +54,44 @@ class _ItemPageState extends State<ItemPage> {
       itemBuilder: (context, index) {
         var item = itemList[index];
         return ItemListTile(
-          image: item['image'],
-          title: item['title'],
-          description: item['description'],
-          sellPrice: item['sellPrice'],
+          title: item.name,
+          sellPrice: item.price,
+          onDeleteTap: () => deleteItem(
+            item.id!,
+          ),
           onTap: () {
             Navigator.pushNamed(
               context,
               ItemFormPage.routeName,
               arguments: item,
-            );
+            ).then((result) {
+              if (result is bool && result) {
+                retrieveItems();
+              }
+            });
           },
         );
       },
     );
   }
 
-  /// Data
-  List<Map<String, dynamic>> get itemList {
-    return [
-      {
-        'image':
-            'https://cdn.eraspace.com/pub/media/catalog/product/cache/184775a204380039ae47e1177f9cfc1b/i/p/iphone_12_pro_pacific_blue_1_3.jpg',
-        'title': 'iPhone 12 Pro',
-        'description': '',
-        'sellPrice': 1579900,
+  Future<void> retrieveItems() async {
+    debugPrint('Retrieve items');
+    itemList = (await itemDatasource?.select())!;
+    setState(() {});
+  }
+
+  Future<void> deleteItem(int id) async {
+    itemDatasource?.delete(id).then(
+      (result) {
+        if (result) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Item successfully deleted'),
+            ),
+          );
+        }
       },
-      {
-        'image':
-            'https://cdn.eraspace.com/pub/media/catalog/product/cache/184775a204380039ae47e1177f9cfc1b/i/p/iphone_12_pro_pacific_blue_1_3.jpg',
-        'title': 'iPhone 12 Pro',
-        'description': '',
-        'sellPrice': 1579900,
-      },
-      {
-        'image':
-            'https://cdn.eraspace.com/pub/media/catalog/product/cache/184775a204380039ae47e1177f9cfc1b/i/p/iphone_12_pro_pacific_blue_1_3.jpg',
-        'title': 'iPhone 12 Pro',
-        'description': '',
-        'sellPrice': 1579900,
-      },
-      {
-        'image':
-            'https://cdn.eraspace.com/pub/media/catalog/product/cache/184775a204380039ae47e1177f9cfc1b/i/p/iphone_12_pro_pacific_blue_1_3.jpg',
-        'title': 'iPhone 12 Pro',
-        'description': '',
-        'sellPrice': 1579900,
-      },
-      {
-        'image':
-            'https://cdn.eraspace.com/pub/media/catalog/product/cache/184775a204380039ae47e1177f9cfc1b/i/p/iphone_12_pro_pacific_blue_1_3.jpg',
-        'title': 'iPhone 12 Pro',
-        'description': '',
-        'sellPrice': 1579900,
-      }
-    ];
+    );
   }
 }

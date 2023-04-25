@@ -1,9 +1,10 @@
+import 'package:clevrpos/common/util/database_util.dart';
 import 'package:clevrpos/common/util/route_util.dart';
 import 'package:flutter/material.dart';
 
-import 'presentation/pages/login_page.dart';
-
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseUtil.initialize();
   runApp(MyApp());
 }
 
