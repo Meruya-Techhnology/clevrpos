@@ -16,62 +16,86 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Login"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              print('Tombolnya di klik');
-            },
-            icon: Icon(Icons.info),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Container(
-          margin: EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: "Username",
+      body: buildBody(context),
+    );
+  }
+
+  Widget buildBody(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: "Username",
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
               ),
-              SizedBox(height: 12),
-              TextFormField(
-                obscureText: isPasswordHidden,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      isPasswordHidden
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      isPasswordHidden = !isPasswordHidden;
-                      setState(() {});
-                    },
+            ),
+            SizedBox(height: 12),
+            TextFormField(
+              obscureText: isPasswordHidden,
+              decoration: InputDecoration(
+                hintText: "Password",
+                filled: true,
+                fillColor: Colors.grey[200],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    isPasswordHidden = !isPasswordHidden;
+                    setState(() {});
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 12),
+            ElevatedButton(
+              style: ButtonStyle(
+                fixedSize: MaterialStatePropertyAll(
+                  Size(double.maxFinite, 45),
+                ),
+                padding: MaterialStatePropertyAll(
+                  EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                ),
+                shape: MaterialStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
                   ),
                 ),
               ),
-              SizedBox(height: 12),
-              MaterialButton(
-                minWidth: double.maxFinite,
-                textColor: Colors.white,
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  /// Navigate ke dashboard
-                  Navigator.pushReplacementNamed(
-                    context,
-                    DashboardPage.routeName,
-                  );
-                },
-                child: Text("Login"),
-              ),
-            ],
-          ),
+              onPressed: () {
+                /// Navigate ke dashboard
+                Navigator.pushReplacementNamed(
+                  context,
+                  DashboardPage.routeName,
+                );
+              },
+              child: Text("Login"),
+            ),
+          ],
         ),
       ),
     );

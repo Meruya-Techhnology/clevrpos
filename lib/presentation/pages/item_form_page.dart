@@ -1,4 +1,5 @@
 import 'package:clevrpos/common/util/database_util.dart';
+import 'package:clevrpos/common/util/thousands_formatter.dart';
 import 'package:clevrpos/infrastructure/datasources/item_datasource.dart';
 import 'package:clevrpos/infrastructure/models/item_model.dart';
 import 'package:clevrpos/presentation/widgets/image_picker_button.dart';
@@ -77,7 +78,7 @@ class _ItemFormPageState extends State<ItemFormPage> {
                 controller: priceController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
+                  ThousandsFormatter(),
                 ],
                 decoration: InputDecoration(
                   labelText: 'Harga',
